@@ -14,7 +14,7 @@ template <class Tp>
 class LinkedList
 {
     private:
-        class Node;
+        struct Node;
         Node *head;
         int length;
 
@@ -85,6 +85,7 @@ class LinkedList
                 p -> next = new Node(p, NULL, op -> data);
             (p -> next = head) -> prev = p;
             length = other.length;
+            return *this;
         }
 
         /**
@@ -132,6 +133,7 @@ class LinkedList
          * @throw IndexOutOfBound
          */
         void add(int index, const Tp& element) {
+            _check_index_range(index);
             Node *p = head;
             for (int i = 0; i < index; i++) p = p -> next;
             Node *tmp_ptr = new Node(p, p -> next, element);

@@ -84,6 +84,7 @@ class ArrayList {
             if (arr_ptr != NULL) delete[] arr_ptr;
             arr_ptr = new Tp[capacity];
             memmove(arr_ptr, other.arr_ptr, sizeof(Tp) * length);
+            return *this;
         }
 
         /**
