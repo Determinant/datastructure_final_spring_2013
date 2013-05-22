@@ -18,7 +18,7 @@ class LinkedList
         Node *head;
         int length;
 
-        void _clear() {
+        void _clear_nodes() {
             for (Node *p = head -> next, *np; p != head; p = np)
             {
                 np = p -> next;
@@ -77,7 +77,7 @@ class LinkedList
          * TODO Assignment operator
          */
         LinkedList<Tp>& operator=(const LinkedList<Tp> &other) {
-            _clear();
+            _clear_nodes();
             Node *p, *op;
             for (p = head, op = other.head -> next; 
                     op != other.head; 
@@ -92,7 +92,7 @@ class LinkedList
          * TODO Desturctor
          */
         ~LinkedList() {
-            _clear();
+            _clear_nodes();
             delete head;
         }
 
@@ -145,7 +145,7 @@ class LinkedList
         /**
          * TODO Removes all of the elements from this list.
          */
-        void clear() { _clear(); }
+        void clear() { _clear_nodes(); }
 
         /**
          * TODO Returns true if this list contains the specified element.
