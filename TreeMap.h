@@ -220,6 +220,8 @@ class TreeMap
                     pptr = &(ptr -> ch[key < ptr -> key]));
 
             Node *ptr = *pptr;
+            if (ptr == NULL) throw ElementNotExist();
+            
             Node * &chl = ptr -> ch[0], * &chr = ptr -> ch[1]; 
             while (chl || chr)
             {
