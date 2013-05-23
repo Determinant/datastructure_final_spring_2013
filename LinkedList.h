@@ -8,17 +8,28 @@
 /**
  * A linked list.
  *
- * The iterator iterates in the order of the elements being loaded into this list.
+ * The iterator iterates in the order of the elements being loaded into this
+ * list.
  */
+
 template <class Tp>
 class LinkedList
 {
     private:
         struct Node;
+        /**
+         * @var head Sentinel node to mark the beginning and end of the list.
+         * @var length The total number of elements in the list.
+         */
+
         Node *head;
         int length;
 
         void _clear_nodes() {
+            /*
+             * @brief Free all allocated nodes in storage.
+             * Note that head is reset properly and length is cleared.
+             */
             for (Node *p = head -> next, *np; p != head; p = np)
             {
                 np = p -> next;
@@ -29,15 +40,26 @@ class LinkedList
         }
 
         void _check_index_range(int index) const {
+            /*
+             * @brief Check and throw IndexOutOfBound when index is out of
+             * range.
+             */
             if (!(0 <= index && index < length))
                 throw IndexOutOfBound(); // access violation
         }
 
         void _check_empty() const {
+            /*
+             * @brief Check and throw ElementNotExist when the container is
+             * empty.
+             */
             if (isEmpty()) throw ElementNotExist();
         }
 
         void _erase_node(Node *p) {
+            /*
+             * @brief Erase a node in the list and free its memory.
+             */
             p -> next -> prev = p -> prev;
             p -> prev -> next = p -> next;
             delete p;
@@ -45,21 +67,22 @@ class LinkedList
         }
 
     public:
-    
+
         class Iterator;
-        /**
-         * TODO Constructs an empty linked list
-         */
+
         LinkedList() {
+            /**
+             * @brief Constructs an empty linked list
+             */
             head = new Node();
             head -> prev = head -> next = head;
             length = 0;
         }
 
-        /**
-         * TODO Copy constructor
-         */
         LinkedList(const LinkedList<Tp> &other) {
+            /**
+             * @brief Copy constructor
+             */
             head = new Node();
             head -> prev = head -> next = head;
             length = 0;
@@ -73,10 +96,11 @@ class LinkedList
             length = other.length;
         }
 
-        /**
-         * TODO Assignment operator
-         */
         LinkedList<Tp>& operator=(const LinkedList<Tp> &other) {
+            /**
+             * @brief Assignment operator
+             */
+
             _clear_nodes();
             Node *p, *op;
             for (p = head, op = other.head -> next; 
@@ -88,51 +112,58 @@ class LinkedList
             return *this;
         }
 
-        /**
-         * TODO Desturctor
-         */
         ~LinkedList() {
+            /**
+             * @brief Desturctor
+             */
+
             _clear_nodes();
             delete head;
         }
 
-        /**
-         * TODO Appends the specified element to the end of this list.
-         * Always returns true.
-         */
         bool add(const Tp& element) {
+            /**
+             * @brief Appends the specified element to the end of this list.
+             * @warning Always returns true.
+             */
+
             addLast(element);
             return true;
         }
 
-        /**
-         * TODO Inserts the specified element to the beginning of this list.
-         */
         void addFirst(const Tp& element) {
+            /**
+             * @brief Inserts the specified element to the beginning of this
+             * list.
+             */
             Node *tmp_ptr = new Node(head, head -> next, element);
             head -> next = tmp_ptr;
             tmp_ptr -> next -> prev = tmp_ptr;
             length++;
         }
 
-        /**
-         * TODO Insert the specified element to the end of this list.
-         * Equivalent to add.
-         */
         void addLast(const Tp &element) {
+            /**
+             * @brief Insert the specified element to the end of this list.
+             * @warning Equivalent to add.
+             */
+
             Node *tmp_ptr = new Node(head -> prev, head, element);
             head -> prev = tmp_ptr;
             tmp_ptr -> prev -> next = tmp_ptr;
             length++;
         }
 
-        /**
-         * TODO Inserts the specified element to the specified position in this list.
-         * The range of index parameter is [0, size], where index=0 means inserting to the head,
-         * and index=size means appending to the end.
-         * @throw IndexOutOfBound
-         */
         void add(int index, const Tp& element) {
+            /**
+             * @brief Inserts the specified element to the specified position in
+             * this list.
+             * The range of index parameter is [0, size], where index=0 means
+             * inserting to the head, and index=size means appending to the
+             * end.
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             Node *p = head;
             for (int i = 0; i < index; i++) p = p -> next;
@@ -142,72 +173,78 @@ class LinkedList
             length++;
         }
 
-        /**
-         * TODO Removes all of the elements from this list.
-         */
+        // @brief Removes all of the elements from this list.
         void clear() { _clear_nodes(); }
 
-        /**
-         * TODO Returns true if this list contains the specified element.
-         */
         bool contains(const Tp& element) const {
+            /**
+             * @brief Returns true if this list contains the specified element.
+             */
+
             for (Node *p = head -> next; p != head; p = p -> next)
                 if (p -> data == element) return true;
             return false;
         }
 
-        /**
-         * TODO Returns a const reference to the element at the specified position in this list.
-         * The index is zero-based, with range [0, size).
-         * @throw IndexOutOfBound
-         */
         const Tp& get(int index) const {
+            /**
+             * @brief Returns a const reference to the element at the specified
+             * position in this list.
+             * The index is zero-based, with range [0, size).
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             Node *p = head -> next;
             for (int i = 0; i < index; i++) p = p -> next;
             return p -> data;
         }
-
-        /**
-         * TODO Returns a const reference to the first element.
-         * @throw ElementNotExist
-         */
         const Tp& getFirst() const {
+
+            /**
+             * @brief const reference to the first element.
+             * @throw ElementNotExist
+             */
+
             _check_empty();
             return head -> next -> data;
         }
 
-        /**
-         * TODO Returns a const reference to the last element.
-         * @throw ElementNotExist
-         */
         const Tp& getLast() const {
+            /**
+             * @brief Returns a const reference to the last element.
+             * @throw ElementNotExist
+             */
+
             _check_empty();
             return head -> prev -> data;
         }
 
-        /**
-         * TODO Returns true if this list contains no elements.
-         */
+        // @brief Returns true if this list contains no elements.
         bool isEmpty() const { return head -> prev == head; }
 
-        /**
-         * TODO Removes the element at the specified position in this list.
-         * The index is zero-based, with range [0, size).
-         * @throw IndexOutOfBound
-         */
         void removeIndex(int index) {
+            /**
+             * @brief Removes the element at the specified position in this
+             * list.
+             * The index is zero-based, with range [0, size).
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             Node *p = head -> next;
             for (int i = 0; i < index; i++) p = p -> next;
             _erase_node(p);
         }
 
-        /**
-         * TODO Removes the first occurrence of the specified element from this list, if it is present.
-         * Returns true if it was present in the list, otherwise false.
-         */
         bool remove(const Tp &element) {
+
+            /**
+             * @brief Removes the first occurrence of the specified element from
+             * this list, if it is present.  Returns true if it was present in
+             * the list, otherwise false.
+             */
+
             for (Node *p = head -> next; p != head; p = p -> next)
                 if (p -> data == element)
                 {
@@ -217,44 +254,44 @@ class LinkedList
             return false;
         }
 
-        /**
-         * TODO Removes the first element from this list.
-         * @throw ElementNotExist
-         */
         void removeFirst() {
+            /**
+             * @brief Removes the first element from this list.
+             * @throw ElementNotExist
+             */
+
             _check_empty();
-            _erase_node(head.next);
+            _erase_node(head -> next);
         }
 
-        /**
-         * TODO Removes the last element from this list.
-         * @throw ElementNotExist
-         */
         void removeLast() {
+            /**
+             * @brief Removes the last element from this list.
+             * @throw ElementNotExist
+             */
+
             _check_empty();
-            _erase_node(head.prev);
+            _erase_node(head -> prev);
         }
 
-        /**
-         * TODO Replaces the element at the specified position in this list with the specified element.
-         * The index is zero-based, with range [0, size).
-         * @throw IndexOutOfBound
-         */
         void set(int index, const Tp &element) {
+            /**
+             * @brief Replaces the element at the specified position in this
+             * list with the specified element.
+             * The index is zero-based, with range [0, size).
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             Node *p = head -> next;
             for (int i = 0; i < index; i++) p = p -> next;
             p -> data = element;
         }
 
-        /**
-         * TODO Returns the number of elements in this list.
-         */
+        // @brief Returns the number of elements in this list.
         int size() const { return length; }
 
-        /**
-         * TODO Returns an iterator over the elements in this list.
-         */
+        // @brief Returns an iterator over the elements in this list.
         Iterator iterator() { return Iterator(this); }
 };
 
@@ -263,41 +300,54 @@ struct LinkedList<Tp>::Node {
     Node *prev, *next; 
     Tp data;
     Node() {}
-    Node(Node *_prev, Node *_next, const Tp &_data) : prev(_prev), next(_next), data(_data) {}
+    Node(Node *_prev, Node *_next, const Tp &_data) 
+        : prev(_prev), next(_next), data(_data) {}
 };
 
 template <class Tp>
 class LinkedList<Tp>::Iterator {
     private:
+        /**
+         * @var cursor Indicate the current index to which the iterator is
+         * pointing
+         * @var container Reflect pointer to the container to which it applies
+         * @var dead True if it has been removed but next has not been called.
+         */
         Node *cursor;
         LinkedList *container;
-
+        bool dead;
     public:
-        Iterator(LinkedList *con) : cursor(con -> head), container(con) {}
-        /**
-         * TODO Returns true if the iteration has more elements.
-         */
+        Iterator() {}
+        Iterator(LinkedList *con) : 
+            cursor(con -> head), container(con), dead(false) {}
+
+        // @brief Returns true if the iteration has more elements.
         bool hasNext() { return cursor -> next != container -> head; }
 
-        /**
-         * TODO Returns the next element in the iteration.
-         * @throw ElementNotExist exception when hasNext() == false
-         */
         const Tp &next() { 
+            /**
+             * @brief Returns the next element in the iteration.
+             * @throw ElementNotExist exception when hasNext() == false
+             */
+
             if (!hasNext()) throw ElementNotExist();
+            if (dead) dead = false; // revive
             return (cursor = cursor -> next) -> data;
         }
 
-        /**
-         * TODO Removes from the underlying collection the last element
-         * returned by the iterator
-         * The behavior of an iterator is unspecified if the underlying
-         * collection is modified while the iteration is in progress in
-         * any way other than by calling this method.
-         * @throw ElementNotExist
-         */
         void remove() {
-            if (cursor == container -> head) throw ElementNotExist();
+            /**
+             * @brief Removes from the underlying collection the last element
+             * returned by the iterator
+             * The behavior of an iterator is unspecified if the underlying
+             * collection is modified while the iteration is in progress in
+             * any way other than by calling this method.
+             * @throw ElementNotExist
+             */
+
+            if (cursor == container -> head || dead) 
+                throw ElementNotExist();
+            dead = true;
             Node *pcursor = cursor -> prev;
             container -> _erase_node(cursor);
             cursor = pcursor;

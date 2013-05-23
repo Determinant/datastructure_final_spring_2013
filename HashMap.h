@@ -8,13 +8,13 @@
 
 /**
  * HashMap is a map implemented by hashing. Also, the 'capacity' here means the
- * number of buckets in your internal implemention, not the current number of the
- * elements.
+ * number of buckets in your internal implemention, not the current number of
+ * the elements.
  *
- * Template argument Hash are used to specify the hash function.
- * Hash should be a class with a static function named ``hashCode'',
- * which takes a parameter of type Key and returns a value of type int.
- * For example, the following class
+ * Template argument Hash are used to specify the hash function.  Hash should
+ * be a class with a static function named ``hashCode'', which takes a
+ * parameter of type Key and returns a value of type int.  For example, the
+ * following class
  * @code
  *      class Hashint {
  *      public:
@@ -28,19 +28,20 @@
  *      HashMap<int, int, Hashint> hash;
  * @endcode
  *
- * Hash function passed to this class should observe the following rule: if two keys
- * are equal (which means key1 == key2), then the hash code of them should be the
- * same. However, it is not generally required that the hash function should work in
- * the other direction: if the hash code of two keys are equal, the two keys could be
- * different.
+ * Hash function passed to this class should observe the following rule: if two
+ * keys are equal (which means key1 == key2), then the hash code of them should
+ * be the same. However, it is not generally required that the hash function
+ * should work in the other direction: if the hash code of two keys are equal,
+ * the two keys could be different.
  *
- * Note that the correctness of HashMap should not rely on the choice of hash function.
- * This is to say that, even the given hash function always returns the same hash code
- * for all keys (thus causing a serious collision), methods of HashMap should still
- * function correctly, though the performance will be poor in this case.
+ * Note that the correctness of HashMap should not rely on the choice of hash
+ * function.  This is to say that, even the given hash function always returns
+ * the same hash code for all keys (thus causing a serious collision), methods
+ * of HashMap should still function correctly, though the performance will be
+ * poor in this case.
  *
- * The order of iteration could be arbitary in HashMap. But it should be guaranteed
- * that each (key, value) pair be iterated exactly once.
+ * The order of iteration could be arbitary in HashMap. But it should be
+ * guaranteed that each (key, value) pair be iterated exactly once.
  */
 
 template <class Key, class Val, class Hash>
@@ -48,16 +49,29 @@ class HashMap
 {
     private:
         struct Node;
+        /**
+         * @var HASH_TABLE_SIZE The size of bucket which is expected to be a
+         * prime.
+         * @var head The bucket, an array of pointers to Node instance.
+         * @var hash_func User-defined hash fuction.
+         * @var elem_num The total number of elements in the container.
+         */
         static const int HASH_TABLE_SIZE = 611953;
         Node **head;
         Hash hash_func;
         int elem_num;
 
         int _rectify(const Key &key) const {
+            /**
+             * @brief Rectify the hash code to fit the size of the bucket.
+             */
             return hash_func.hashCode(key) % HASH_TABLE_SIZE;
         }
 
         void _clear_nodes() {
+            /*
+             * @brief Free all allocated nodes in storage.
+             */
             for (int i = 0; i < HASH_TABLE_SIZE; i++)
                 for (Node *np, *p = head[i]; p; p = np)
                 {
@@ -69,28 +83,29 @@ class HashMap
     public:
         class Entry;
         class Iterator;
-        /**
-         * TODO Constructs an empty hash map.
-         */
+
         HashMap() { 
+            /**
+             * @brief Constructs an empty hash map.
+             */
             head = new Node*[HASH_TABLE_SIZE];
             memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
             elem_num = 0;
             hash_func = Hash();
         }
 
-        /**
-         * TODO Destructor
-         */
         ~HashMap() { 
+            /**
+             * @brief Destructor
+             */
             _clear_nodes(); 
             delete[] head;
         }
 
-        /**
-         * TODO Assignment operator
-         */
         HashMap &operator=(const HashMap &other) {
+            /**
+             * @brief Assignment operator
+             */
             memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
             for (int i = 0; i < HASH_TABLE_SIZE; i++)
             {
@@ -105,10 +120,10 @@ class HashMap
             return *this;
         }
 
-        /**
-         * TODO Copy-constructor
-         */
         HashMap(const HashMap &other) {
+            /**
+             * @brief Copy-constructor
+             */
             head = new Node*[HASH_TABLE_SIZE];
             memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
             for (int i = 0; i < HASH_TABLE_SIZE; i++)
@@ -123,59 +138,60 @@ class HashMap
             hash_func = other.hash_func;
         }
 
-        /**
-         * TODO Returns an iterator over the elements in this map.
-         */
         Iterator iterator() const { return Iterator(this); }
+        // @brief Returns an iterator over the elements in this map.
 
-        /**
-         * TODO Removes all of the mappings from this map.
-         */
         void clear() {
+            /**
+             * @brief Removes all of the mappings from this map.
+             */
             _clear_nodes();
             memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
             elem_num = 0;
         }
 
-        /**
-         * TODO Returns true if this map contains a mapping for the specified key.
-         */
         bool containsKey(const Key &key) const {
+            /**
+             * @brief Returns true if this map contains a mapping for the specified
+             * key.
+             */
             for (Node *p = head[_rectify(key)]; p; p = p -> next)
                 if (p -> key == key) return true;
             return false;
         }
 
-        /**
-         * TODO Returns true if this map maps one or more keys to the specified value.
-         */
         bool containsValue(const Val &value) const {
+            /**
+             * @brief Returns true if this map maps one or more keys to the
+             * specified value.
+             */
             for (int i = 0; i < HASH_TABLE_SIZE; i++)
                 for (Node *p = head[i]; p; p = p -> next)
                     if (p -> val == value) return true;
             return false;
         }
 
-        /**
-         * TODO Returns a const reference to the value to which the specified key is mapped.
-         * If the key is not present in this map, this function should throw ElementNotExist exception.
-         * @throw ElementNotExist
-         */
         const Val &get(const Key &key) const {
+            /**
+             * @brief Returns a const reference to the value to which the specified
+             * key is mapped.  If the key is not present in this map, this function
+             * should throw ElementNotExist exception.
+             * @throw ElementNotExist
+             */
+
             for (Node *p = head[_rectify(key)]; p; p = p -> next)
                 if (p -> key == key) return p -> val;
             throw ElementNotExist();
         }
 
-        /**
-         * TODO Returns true if this map contains no key-value mappings.
-         */
         bool isEmpty() const { return elem_num == 0; }
+        // @brief Returns true if this map contains no key-value mappings.
 
-        /**
-         * TODO Associates the specified value with the specified key in this map.
-         */
         void put(const Key &key, const Val &value) {
+            /**
+             * @brief Associates the specified value with the specified key in this
+             * map.
+             */
             Node *dup = NULL;
             int hv = _rectify(key);
             for (Node *p = head[hv]; p; p = p -> next)
@@ -189,12 +205,13 @@ class HashMap
             else dup -> val = value; // alter the original value
         }
 
-        /**
-         * TODO Removes the mapping for the specified key from this map if present.
-         * If there is no mapping for the specified key, throws ElementNotExist exception.
-         * @throw ElementNotExist
-         */
         void remove(const Key &key) {
+            /**
+             * @brief Removes the mapping for the specified key from this map if
+             * present.  If there is no mapping for the specified key, throws
+             * ElementNotExist exception.
+             * @throw ElementNotExist
+             */
             int hv = _rectify(key);
             if (head[hv])
             {
@@ -222,10 +239,8 @@ class HashMap
             throw ElementNotExist();
         }
 
-        /**
-         * TODO Returns the number of key-value mappings in this map.
-         */
         int size() const { return elem_num; }
+        // @brief Returns the number of key-value mappings in this map.
 };
 
 template <class Key, class Val, class Hash>
@@ -233,7 +248,8 @@ struct HashMap<Key, Val, Hash>::Node {
     Key key;
     Val val;
     Node *next;
-    Node(Key _key, Val _val, Node *_next) : key(_key), val(_val), next(_next) {}
+    Node(Key _key, Val _val, Node *_next) : 
+        key(_key), val(_val), next(_next) {}
 };
 
 template <class Key, class Val, class Hash>
@@ -261,6 +277,12 @@ class HashMap<Key, Val, Hash>::Entry {
 template <class Key, class Val, class Hash>
 class HashMap<Key, Val, Hash>::Iterator {
     private:
+        /**
+         * @var cur_index The current index of the head array to which the
+         * iterator is pointing.
+         * @var cur_node The current node pointer.
+         * @var container Reflect pointer to the container to which it applies.
+         */
         int cur_index;
         Node *cur_node;
         const HashMap *container;
@@ -272,10 +294,12 @@ class HashMap<Key, Val, Hash>::Iterator {
             {
                 next_index = 0;
                 next_node = container -> head[0];
-            } else next_node = next_node -> next;
+            } 
+            else next_node = next_node -> next;
             if (next_node == NULL)
             {
-                while (container -> head[++next_index] == NULL && next_index < HashMap::HASH_TABLE_SIZE);
+                while (container -> head[++next_index] == NULL && 
+                        next_index < HashMap::HASH_TABLE_SIZE);
                 if (next_index < HashMap::HASH_TABLE_SIZE)
                     next_node = container -> head[next_index];
             }
@@ -283,25 +307,28 @@ class HashMap<Key, Val, Hash>::Iterator {
         }
 
     public:
+        Iterator() {}
         Iterator(const HashMap *con) {
             container = con;
             cur_index = -1;
             cur_node = NULL;
         }
-        /**
-         * TODO Returns true if the iteration has more elements.
-         */
         bool hasNext() {
+            /**
+             * @brief Returns true if the iteration has more elements.
+             */
+
             int nidx;
             Node *nnode;
             return _try_next(nidx, nnode);
         }
 
-        /**
-         * TODO Returns the next element in the iteration.
-         * @throw ElementNotExist exception when hasNext() == false
-         */
         Entry next() {
+            /**
+             * @brief Returns the next element in the iteration.
+             * @throw ElementNotExist exception when hasNext() == false
+             */
+
             int nidx;
             Node *nnode;
             if (!_try_next(nidx, nnode)) throw ElementNotExist();

@@ -7,18 +7,21 @@
 #include <cstring>
 
 /**
- * The ArrayList is just like vector in C++.
- * You should know that "capacity" here doesn't mean how many elements are now in this list, where it means
- * the length of the array of your internal implemention
+ * The ArrayList is just like vector in C++.  You should know that "capacity"
+ * here doesn't mean how many elements are now in this list, where it means the
+ * length of the array of your internal implemention.
  *
- * The iterator iterates in the order of the elements being loaded into this list
+ * The iterator iterates in the order of the elements being loaded into this
+ * list.
  */
+
 template <class Tp>
 class ArrayList {
     private:
         /**
          * @var arr_ptr The pointer for manipulating the actual storage.
-         * @var capacity The acutal memory that storage has occupied (in elements).
+         * @var capacity The acutal memory that storage has occupied (in
+         * elements).
          * @var size The logical size of the desired array.
          * @var tp_size Pre-calced size of a element.
          */
@@ -27,11 +30,11 @@ class ArrayList {
         int capacity, length, tp_size;
 
         void _realloc_space() {
-            /*
-             * @brief Double the space if it's necessary.
-             * @warning It's assumed that the increasement of size is not large than 1
+            /**
+             * @brief Double the space if necessary.
+             * @warning It's assumed that the increasement of size is not larger
+             * than one
              */
-
             if (length > capacity)
             {
                 if (capacity == 0) 
@@ -41,16 +44,22 @@ class ArrayList {
                 }
                 else
                 {
-                    capacity <<= 1;                         // double the capacity
-                    Tp *tmp_ptr = new Tp[capacity];         // allocate a temporary space
-                    memmove(tmp_ptr, arr_ptr, sizeof(Tp) * length);  // do copy
-                    delete[] arr_ptr;                       // release the original space
+                    capacity <<= 1; 
+                    Tp *tmp_ptr = new Tp[capacity]; 
+                    // double the capacity
+                    memmove(tmp_ptr, arr_ptr, sizeof(Tp) * length); 
+                    delete[] arr_ptr; 
+                    // move and free the original space
                     arr_ptr = tmp_ptr;
                 }
             }
         }
 
         void _check_index_range(int index) const {
+            /**
+             * @brief Check and throw IndexOutOfBound when index is out of
+             * range.
+             */
             if (!(0 <= index && index < length))
                 throw IndexOutOfBound(); // access violation
         }
@@ -58,27 +67,29 @@ class ArrayList {
     public:
 
         class Iterator;
-        /**
-         * TODO Constructs an empty array list.
-         */
+
         ArrayList() { 
+            /**
+             * @brief Constructs an empty array list.
+             */
             arr_ptr = NULL;
             capacity = 0;
             length = 0;
             tp_size = sizeof(Tp);
         }
 
-        /**
-         * TODO Destructor
-         */
         ~ArrayList() {
+            /**
+             * @brief Destructor. Try to release all the memory allocated via
+             * arr_ptr;
+             */
             delete[] arr_ptr;
         }
 
-        /**
-         * TODO Assignment operator
-         */
         ArrayList& operator=(const ArrayList& other) { 
+            /**
+             * @brief Assignment operator
+             */
             capacity = other.capacity;
             length = other.length;
             if (arr_ptr != NULL) delete[] arr_ptr;
@@ -87,10 +98,11 @@ class ArrayList {
             return *this;
         }
 
-        /**
-         * TODO Copy-constructor
-         */
         ArrayList(const ArrayList& other) {
+            /**
+             * @brief Copy-constructor. Copy the whole storage memory to the
+             * new-born instance.
+             */
             capacity = other.capacity;
             length = other.length;
             arr_ptr = new Tp[capacity];
@@ -98,24 +110,27 @@ class ArrayList {
         }
 
 
-        /**
-         * TODO Appends the specified element to the end of this list.
-         * Always returns true.
-         */
         bool add(const Tp& new_element) {
+            /**
+             * @brief Appends the specified element to the end of this list.
+             * @warning Always returns true.
+             */
+
             length++;
-            _realloc_space();
+            _realloc_space(); // try to double space
             arr_ptr[length - 1] = new_element;
             return true;
         }
 
-        /**
-         * TODO Inserts the specified element to the specified position in this list.
-         * The range of index parameter is [0, size], where index=0 means inserting to the head,
-         * and index=size means appending to the end.
-         * @throw IndexOutOfBound
-         */
         void add(int before_idx, const Tp& element) {
+
+            /**
+             * @brief Inserts the specified element to the specified position in
+             * this list.
+             * The range of index parameter is [0, size], where index=0 means
+             * inserting to the head, and index=size means appending to the end.
+             * @throw IndexOutOfBound
+             */
 
             length++;
             _check_index_range(before_idx);
@@ -125,52 +140,55 @@ class ArrayList {
             arr_ptr[before_idx] = element;
         }
 
-        /**
-         * TODO Removes all of the elements from this list.
-         */
+        // @brief Removes all of the elements from this list.
         void clear() { length = 0; }
 
-        /**
-         * TODO Returns true if this list contains the specified element.
-         */
         bool contains(const Tp& element) const {
+            /**
+             * @brief Returns true if this list contains the specified element.
+             */
+
             for (int i = 0; i < length; i++)
                 if (arr_ptr[i] == element) return true;
             return false;
         }
 
-        /**
-         * TODO Returns a const reference to the element at the specified position in this list.
-         * The index is zero-based, with range [0, size).
-         * @throw IndexOutOfBound
-         */
         const Tp& get(int index) const {
+            /**
+             * @brief Returns a const reference to the element at the specified
+             * position in this list.
+             * The index is zero-based, with range [0, size).
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             return arr_ptr[index];
         }
 
-        /**
-         * TODO Returns true if this list contains no elements.
-         */
+        // @brief Returns true if this list contains no elements.
         bool isEmpty() const { return length == 0; }
 
-        /**
-         * TODO Removes the element at the specified position in this list.
-         * The index is zero-based, with range [0, size).
-         * @throw IndexOutOfBound
-         */
         void removeIndex(int index) {
+            /**
+             * @brief Removes the element at the specified position in this
+             * list.
+             * The index is zero-based, with range [0, size).
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             length--;
             for (int i = index; i < length; i++)
                 arr_ptr[i] = arr_ptr[i + 1];
         }
 
-        /**
-         * TODO Removes the first occurrence of the specified element from this list, if it is present.
-         * Returns true if it was present in the list, otherwise false.
-         */
         bool remove(const Tp &element) {
+            /**
+             * @brief Removes the first occurrence of the specified element from
+             * this list, if it is present.
+             * Returns true if it was present in the list, otherwise false.
+             */
+
             for (int i = 0; i < length; i++)
                 if (arr_ptr[i] == element)
                 {
@@ -180,24 +198,22 @@ class ArrayList {
             return false;
         }
 
-        /**
-         * TODO Replaces the element at the specified position in this list with the specified element.
-         * The index is zero-based, with range [0, size).
-         * @throw IndexOutOfBound
-         */
         void set(int index, const Tp &element) {
+            /**
+             * @brief Replaces the element at the specified position in this
+             * list with the specified element.
+             * The index is zero-based, with range [0, size).
+             * @throw IndexOutOfBound
+             */
+
             _check_index_range(index);
             arr_ptr[index] = element;
         }
 
-        /**
-         * TODO Returns the number of elements in this list.
-         */
+        // @brief Returns the number of elements in this list.
         int size() const { return length; }
 
-        /**
-         * TODO Returns an iterator over the elements in this list.
-         */
+        // @brief Returns an iterator over the elements in this list.
         Iterator iterator() { return Iterator(this); }
 };
 
@@ -205,47 +221,49 @@ template<class Tp>
 class ArrayList<Tp>::Iterator {
 
     private:
+
+        /**
+         * @var cursor Indicate the current index to which the iterator is
+         * pointing
+         * @var container Reflect pointer to the container to which it applies
+         * @var dead True if it has been removed but next has not been called.
+         */
         int cursor;
         ArrayList *container;
         bool dead;
 
     public:
 
-        Iterator(): dead(true) {}
-        Iterator(ArrayList *con) :  cursor(0), container(con), dead(false){}
-        /**
-         * TODO Returns true if the iteration has more elements.
-         */
-        bool hasNext() {
-            if (dead) return false;
-            return cursor < container -> length;
-        }
+        Iterator() {}
+        Iterator(ArrayList *con) : 
+            cursor(0), container(con), dead(false) {}
 
-        /**
-         * TODO Returns the next element in the iteration.
-         * @throw ElementNotExist exception when hasNext() == false
-         */
+        // @brief Returns true if the iteration has more elements.
+        bool hasNext() { return cursor < container -> length; }
+
         const Tp &next() {
-            if (!hasNext()) dead = true;
-            if (dead) throw ElementNotExist();
+            /**
+             * @brief Returns the next element in the iteration.
+             * @throw ElementNotExist exception when hasNext() == false
+             */
+
+            if (!hasNext()) throw ElementNotExist();
+            if (dead) dead = false; // revive
             return container -> arr_ptr[cursor++];
         }
 
-        /**
-         * TODO Removes from the underlying collection the last element
-         * returned by the iterator
-         * The behavior of an iterator is unspecified if the underlying
-         * collection is modified while the iteration is in progress in
-         * any way other than by calling this method.
-         * @throw ElementNotExist
-         */
         void remove() {
-            if (dead) throw ElementNotExist();
-            if (--cursor < 0)
-            {
-                dead = true;
-                throw ElementNotExist();
-            }
+            /**
+             * @brief Removes from the underlying collection the last element
+             * returned by the iterator
+             * The behavior of an iterator is unspecified if the underlying
+             * collection is modified while the iteration is in progress in any
+             * way other than by calling this method.
+             * @throw ElementNotExist
+             */
+
+            if (--cursor < 0 || dead) throw ElementNotExist(); 
+            // not pointing to any valid position
             container -> removeIndex(cursor);
         }
 };
