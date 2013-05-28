@@ -106,17 +106,20 @@ class HashMap
             /**
              * @brief Assignment operator
              */
-            memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
-            for (int i = 0; i < HASH_TABLE_SIZE; i++)
+            if (this != &other)
             {
-                for (Node *p = other.head[i]; p; p = p -> next)
+                memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
+                for (int i = 0; i < HASH_TABLE_SIZE; i++)
                 {
-                    Node *tmp_ptr = new Node(p -> key, p -> val, head[i]);
-                    head[i] = tmp_ptr;
+                    for (Node *p = other.head[i]; p; p = p -> next)
+                    {
+                        Node *tmp_ptr = new Node(p -> key, p -> val, head[i]);
+                        head[i] = tmp_ptr;
+                    }
                 }
+                elem_num = other.elem_num;
+                hash_func = other.hash_func;
             }
-            elem_num = other.elem_num;
-            hash_func = other.hash_func;
             return *this;
         }
 

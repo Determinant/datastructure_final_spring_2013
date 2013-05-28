@@ -106,9 +106,12 @@ class TreeMap
             /**
              * @brief Assignment operator
              */
-            _clear_nodes();
-            _copy_nodes(other);
-            elem_num = other.elem_num;
+            if (this != &other)
+            {
+                _clear_nodes();
+                _copy_nodes(other);
+                elem_num = other.elem_num;
+            }
             return *this;
         }
 
@@ -186,7 +189,7 @@ class TreeMap
                     ptr -> val = value; // alter the value
                     return;
                 }
-                ((dir = key < ptr -> key) ? nxt : prv) = ptr;
+                ((dir = key < ptr -> key) ? prv : nxt) = ptr;
                 path.addLast(pptr);
                 drec.addLast(dir);
             }

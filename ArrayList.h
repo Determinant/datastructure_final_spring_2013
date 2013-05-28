@@ -90,11 +90,14 @@ class ArrayList {
             /**
              * @brief Assignment operator
              */
-            capacity = other.capacity;
-            length = other.length;
-            if (arr_ptr != NULL) delete[] arr_ptr;
-            arr_ptr = new Tp[capacity];
-            memmove(arr_ptr, other.arr_ptr, sizeof(Tp) * length);
+            if (this != &other)
+            {
+                capacity = other.capacity;
+                length = other.length;
+                if (arr_ptr != NULL) delete[] arr_ptr;
+                arr_ptr = new Tp[capacity];
+                memmove(arr_ptr, other.arr_ptr, sizeof(Tp) * length);
+            }
             return *this;
         }
 

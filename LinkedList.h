@@ -101,14 +101,17 @@ class LinkedList
              * @brief Assignment operator
              */
 
-            _clear_nodes();
-            Node *p, *op;
-            for (p = head, op = other.head -> next; 
-                    op != other.head; 
-                    p = p -> next, op = op -> next)
-                p -> next = new Node(p, NULL, op -> data);
-            (p -> next = head) -> prev = p;
-            length = other.length;
+            if (this != &other)
+            {
+                _clear_nodes();
+                Node *p, *op;
+                for (p = head, op = other.head -> next; 
+                        op != other.head; 
+                        p = p -> next, op = op -> next)
+                    p -> next = new Node(p, NULL, op -> data);
+                (p -> next = head) -> prev = p;
+                length = other.length;
+            }
             return *this;
         }
 
