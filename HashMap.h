@@ -108,6 +108,7 @@ class HashMap
              */
             if (this != &other)
             {
+                _clear_nodes();
                 memset(head, 0, sizeof(Node*) * HASH_TABLE_SIZE);
                 for (int i = 0; i < HASH_TABLE_SIZE; i++)
                 {
