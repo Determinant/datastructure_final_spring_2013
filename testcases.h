@@ -1,5 +1,9 @@
 /**
- * Copyright (C) 2013 Ted Yin <ted.sybil@gmail.com>
+ * Copyright (C) 2013 
+ *
+ * Ted Yin <ted.sybil@gmail.com>
+ * Liao Chao <zeonsgtr@gmail.com>
+ *
  * This file is part of Spring 2013 Final Project for Data Structure Class.
  * 
  * SFPDSC is free software: you can redistribute it and/or modify
@@ -25,17 +29,26 @@
 #include "ArrayList.h"
 #include "LinkedList.h"
 
-#define LIST_TEMPLATE_HEADER template<template <class> class List>
-#define MAP_TEMPLATE_HEADER template<template <class> class Map>
+#include <vector>
+#include <ctime>
+#include <set>
+#include <algorithm>
 
 using UnitTest::TestCase;
 using UnitTest::TestFixture;
 using UnitTest::TestException;
 
-LIST_TEMPLATE_HEADER
+using std::random_shuffle;
+using std::make_pair;
+using std::vector;
+using std::pair;
+using std::sort;
+using std::set;
+
+template <class List>
 class ListTest : public TestCase {/*{{{*/
     protected:
-        List<int> *arr_ptr;
+        List *arr_ptr;
     public:
         ListTest(TestFixture *_fixture) : 
             TestCase(_fixture) {}
@@ -46,14 +59,14 @@ class ListTest : public TestCase {/*{{{*/
                 printf("%d ", arr_ptr -> get(i));
             puts("");
 
-            for (typename List<int>::Iterator it = arr_ptr -> iterator();
+            for (typename List::Iterator it = arr_ptr -> iterator();
                     it.hasNext();)
                 printf("%d ",  it.next());
             puts("");
         }
 
         void set_up() {
-            arr_ptr = new List<int>();
+            arr_ptr = new List();
         }
 
         void tear_down() {
@@ -61,7 +74,7 @@ class ListTest : public TestCase {/*{{{*/
         }
 };/*}}}*/
 
-LIST_TEMPLATE_HEADER
+template <class List>
 class ListTestConsecutiveInsert: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -83,7 +96,7 @@ class ListTestConsecutiveInsert: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-LIST_TEMPLATE_HEADER
+template <class List>
 class ListTestModification: public ListTest<List> {/*{{{*/
     private:
         int bound;
@@ -112,7 +125,7 @@ class ListTestModification: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-LIST_TEMPLATE_HEADER
+template <class List>
 class ListTestRepetitiveClear: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -143,7 +156,7 @@ class ListTestRepetitiveClear: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-LIST_TEMPLATE_HEADER
+template <class List>
 class ListTestInsertAndRemove: public ListTest<List> {/*{{{*/
     private:
         int bound;
@@ -180,7 +193,7 @@ class ListTestInsertAndRemove: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-LIST_TEMPLATE_HEADER
+template <class List>
 class ListTestIterator: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -200,7 +213,7 @@ class ListTestIterator: public ListTest<List> {/*{{{*/
         void run_test() {
             for (int i = 0; i < 100; i++)
                 this -> arr_ptr -> add(i);
-            typename List<int>::Iterator it = this -> arr_ptr -> iterator();
+            typename List::Iterator it = this -> arr_ptr -> iterator();
             bool flag;
 
             try
@@ -243,7 +256,7 @@ class ListTestIterator: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-LIST_TEMPLATE_HEADER
+template <class List>
 class ListTestRandomOperation: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -313,4 +326,181 @@ class ListTestRandomOperation: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
+/*{{{ Map Tester thanks to Liao Chao */
+template <class Map>
+class TreeMapTest: public TestCase { /*{{{*/
+	protected:
+		Map *map_ptr;
+
+	public:
+		TreeMapTest(TestFixture *_fixture): TestCase(_fixture) {}
+
+		void print_map_elems() {
+			for (typename Map::Iterator it = map_ptr->iterator(); it.hasNext(); ) {
+				typename Map::Entry tmp = it.next(); 
+				printf("(%d, %d) ", tmp.getKey(), tmp.getValue());
+			}
+			puts("");
+		}
+
+		void set_up() {
+			map_ptr = new Map();
+		}
+
+		void tear_down() {
+			delete map_ptr;
+		}
+};/*}}}*/
+
+template <class Map>
+class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
+	private:
+		int times, upper;
+
+		int _rand() {
+			return (rand() ^ rand()) % upper;
+		}
+
+	public:
+		TreeMapTestAllRandomly(int _times, int _upper, TestFixture *_fixture):
+			TreeMapTest <Map>(_fixture), times(_times), upper(_upper) {}
+
+		void set_up() {
+			if (times == 0) {
+				throw TestException("Ooooops, wrong argument @times");
+			}
+			if (upper == 0) {
+				throw TestException("Ooooops, wrong argument @upper");
+			}
+			if (times > upper) {
+				throw TestException("Ooooops, wrong argument @times @upper, @times");
+			}
+			puts("== Now Preparing to test all randomly...");
+			TreeMapTest <Map>::set_up();
+		}
+
+		void tear_down() {
+			puts("== Finishing the test...");
+			TreeMapTest <Map>::tear_down();
+		}
+
+		void run_test() {
+			srand(time(0));
+			vector <pair <int, int> > events;
+			set <int> all_keys;
+			for (int i = 0; i < times; i++) {
+				while (true) {
+					int a = _rand(), b = _rand();
+					if (all_keys.count(a)) {
+						continue;
+					}
+					all_keys.insert(a);
+					events.push_back(make_pair(a, b));
+					this->map_ptr->put(a, b);
+					break;
+				}
+			}
+			puts("\nall elements:");
+			this->print_map_elems();
+			puts("");
+
+			/**
+			 * test the Iterator & Insertion
+			 */
+			puts("checking the Iterator & Insertion:");
+			sort(events.begin(), events.end());
+			int counter = 0;
+			for (typename Map::Iterator it = this->map_ptr
+					->iterator(); it.hasNext(); ) {
+				typename Map::Entry tmp = it.next();
+				if (tmp.getKey() != events[counter].first || tmp.getValue() != events[counter].second) {
+					throw TestException("Ooooops, the Iterator of the Map "\
+							"gives wrong logical tree structure!!!");
+				}
+				counter++;
+			}
+			puts("OK\n");
+
+			/**
+			 * test the clear() function & isEmpty() function
+			 */
+			puts("checking clear() function & isEmpty() function:");
+			this->map_ptr->clear();
+			if (!this->map_ptr->isEmpty()) {
+				throw TestException("Ooooops, the clear() fucntion gose wrong!!!");
+			}
+			for (int i = 0; i < (int)events.size(); i++) {
+				this->map_ptr->put(events[i].first, events[i].second);
+			}
+			counter = 0;
+			for (typename Map::Iterator it = this->map_ptr
+					->iterator(); it.hasNext(); ) {
+				typename Map::Entry tmp = it.next();
+				if (tmp.getKey() != events[counter].first || tmp.getValue() != events[counter].second) {
+					throw TestException("Ooooops, the Iterator of the Map "\
+							"gives wrong logical tree structure afther clear() operation!!!");
+				}
+				counter++;
+			}
+			puts("OK\n");
+
+			/**
+			 * test the containsKey() function
+			 */
+			puts("checking containKey() function:");
+			random_shuffle(events.begin(), events.end());
+			for (int i = 0; i < (int)events.size(); i++) {
+				//printf("checkIndex=%d key=%d value=%d\n", i, events[i].first, events[i].second);
+				if (this->map_ptr->containsKey(events[i].first) == false) {
+					throw TestException("Ooooops, the containsKey() function of the Map "\
+							"goes wrong!!!");
+				}
+				int r = _rand();
+				//printf("randomly check value = %d %d %d\n", r, this->map_ptr->containsKey(events[i].first), all_keys.count(r));
+				if (this->map_ptr->containsKey(r) != all_keys.count(r)) {
+					throw TestException("Ooooops, the containsKey() function of the Map "\
+							"goes wrong!!!");
+				}
+			}
+			puts("OK\n");
+
+			/**
+			 * test the get() function & put() function
+			 */
+			puts("check get() function & put() fucntion:");
+			random_shuffle(events.begin(), events.end());
+			for (int i = 0; i < (int)events.size(); i++) {
+				if (this->map_ptr->get(events[i].first) != events[i].second) {
+					throw TestException("Ooooops, the get() function of the Map"\
+							"goes wrong!!!");
+				}
+				events[i].second = _rand();
+				this->map_ptr->put(events[i].first, events[i].second);
+				if (this->map_ptr->get(events[i].first) != events[i].second) {
+					throw TestException("Ooooops, the put() function didn't take place"\
+							"the new value!!!");
+				}
+			}
+			puts("OK\n");
+
+			/**
+			 * test the remove() function & size() function
+			 */
+			puts("checking remove() function & size() function:");
+			random_shuffle(events.begin(), events.end());
+			for (int i = 0; i < (int)events.size(); i++) {
+				//printf("checkIndex=%d key=%d value=%d\n", i, events[i].first, events[i].second);
+				this->map_ptr->remove(events[i].first);
+				if (this->map_ptr->containsKey(events[i].first)) {
+					throw TestException("Ooooops, the remove() function "\
+							"goes wrong!!!");
+				}
+				if (this->map_ptr->size() != (int)events.size() - i - 1) {
+					throw TestException("Ooooops, the size() function "\
+							"goes wrong!!!");
+				}
+			}
+			puts("OK\n");
+		}
+};/*}}}*/ /*}}}*/
 #endif

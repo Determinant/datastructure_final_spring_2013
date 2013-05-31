@@ -18,22 +18,32 @@
 
 #include "testcases.h"
 
+class HashInt {
+public:
+    static int hashCode(int obj) {
+        return obj;
+    }
+};
+
 int main() {
 
     TestFixture t;
-    ListTestConsecutiveInsert<ArrayList> arr_altci(1000, &t);
-    ListTestModification<ArrayList> arr_altm(100, &t);
-    ListTestRepetitiveClear<ArrayList> arr_altpc(100, &t);
-    ListTestInsertAndRemove<ArrayList> arr_altir(100, &t);
-    ListTestIterator<ArrayList> arr_alti(&t);
-    ListTestRandomOperation<ArrayList> arr_ro(100000, &t);
+    ListTestConsecutiveInsert<ArrayList<int> > arr_altci(1000, &t);
+    ListTestModification<ArrayList<int> > arr_altm(100, &t);
+    ListTestRepetitiveClear<ArrayList<int> > arr_altpc(100, &t);
+    ListTestInsertAndRemove<ArrayList<int> > arr_altir(100, &t);
+    ListTestIterator<ArrayList<int> > arr_alti(&t);
+    ListTestRandomOperation<ArrayList<int> > arr_ro(100000, &t);
 
-    ListTestConsecutiveInsert<LinkedList> linked_altci(1000, &t);
-    ListTestModification<LinkedList> linked_altm(100, &t);
-    ListTestRepetitiveClear<LinkedList> linked_altpc(100, &t);
-    ListTestInsertAndRemove<LinkedList> linked_altir(100, &t);
-    ListTestIterator<LinkedList> linked_alti(&t); 
-    ListTestRandomOperation<LinkedList> linked_ro(100000, &t);
+    ListTestConsecutiveInsert<LinkedList<int> > linked_altci(1000, &t);
+    ListTestModification<LinkedList<int> > linked_altm(100, &t);
+    ListTestRepetitiveClear<LinkedList<int> > linked_altpc(100, &t);
+    ListTestInsertAndRemove<LinkedList<int> > linked_altir(100, &t);
+    ListTestIterator<LinkedList<int> > linked_alti(&t); 
+    ListTestRandomOperation<LinkedList<int> > linked_ro(100000, &t);
+
+    TreeMapTestAllRandomly<TreeMap<int, int> > tree_all(500, 500, &t);
+    TreeMapTestAllRandomly<HashMap<int, int, HashInt> > hash_all(500, 500, &t);
 
     if (t.test_all()) puts("All tests have finished without errors.");
     else return 1;
