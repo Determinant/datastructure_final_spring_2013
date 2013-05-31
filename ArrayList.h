@@ -265,9 +265,9 @@ class ArrayList<Tp>::Iterator {
              * @throw ElementNotExist
              */
 
-            if (--cursor < 0 || dead) throw ElementNotExist(); 
+            if (cursor - 1 < 0 || dead) throw ElementNotExist(); 
             // not pointing to any valid position
-            container -> removeIndex(cursor);
+            container -> removeIndex(--cursor);
         }
 };
 

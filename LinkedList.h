@@ -13,8 +13,7 @@
  */
 
 template <class Tp>
-class LinkedList
-{
+class LinkedList {
     private:
         struct Node;
         /**
