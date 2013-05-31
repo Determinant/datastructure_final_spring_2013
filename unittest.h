@@ -73,17 +73,32 @@ namespace UnitTest {
 
     class TestCase {
 
+        string case_name;
         TestFixture *fixture;
-        int base_alloc_cnt;
+        int base_alloc_cnt, end_alloc_cnt;
 
         public:
         TestCase(TestFixture *_fixture): fixture(_fixture) {
             fixture -> add_case(this);
-            base_alloc_cnt = total_alloc_cnt;
+        }
+
+        TestCase(string _case_name, TestFixture *_fixture) : 
+            case_name(_case_name), fixture(_fixture) {
+            fixture -> add_case(this);
         }
 
         ~TestCase() {
-            printf("Net Alloc Cnt: %d\n", total_alloc_cnt - base_alloc_cnt);
+            printf("%s\t %d\n", 
+                    case_name.c_str(),
+                    end_alloc_cnt - base_alloc_cnt);
+        }
+
+        void start_memory_watching() {
+            base_alloc_cnt = total_alloc_cnt;
+        }
+
+        void stop_memory_watching() {
+            end_alloc_cnt = total_alloc_cnt;
         }
 
         virtual void set_up() {}

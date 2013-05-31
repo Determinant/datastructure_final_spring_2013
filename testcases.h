@@ -29,6 +29,7 @@
 #include "ArrayList.h"
 #include "LinkedList.h"
 
+#include <cstdlib>
 #include <vector>
 #include <ctime>
 #include <set>
@@ -51,7 +52,9 @@ class ListTest : public TestCase {/*{{{*/
         List *arr_ptr;
     public:
         ListTest(TestFixture *_fixture) : 
-            TestCase(_fixture) {}
+            TestCase("ListTest", _fixture) {}
+        ListTest(string case_name, TestFixture *_fixture) : 
+            TestCase(case_name, _fixture) {}
 
         void print_array_list() {
 
@@ -66,11 +69,13 @@ class ListTest : public TestCase {/*{{{*/
         }
 
         void set_up() {
+            this -> start_memory_watching();
             arr_ptr = new List();
         }
 
         void tear_down() {
             delete arr_ptr;
+            this -> stop_memory_watching();
         }
 };/*}}}*/
 
@@ -80,7 +85,11 @@ class ListTestConsecutiveInsert: public ListTest<List> {/*{{{*/
         int times;
     public:
         ListTestConsecutiveInsert(int _times, TestFixture *_fixture) : 
-            ListTest<List>(_fixture), times(_times) {}
+            ListTest<List>("ListTestConsecutiveInsert", _fixture), times(_times) {}
+
+        ListTestConsecutiveInsert(string case_name, int _times, TestFixture *_fixture) : 
+            ListTest<List>(case_name, _fixture), times(_times) {}
+
         void set_up() {
             puts("== Now preparing to test Consecutive Insertion...");
             ListTest<List>::set_up();
@@ -102,7 +111,10 @@ class ListTestModification: public ListTest<List> {/*{{{*/
         int bound;
     public:
         ListTestModification(int _bound, TestFixture *_fixture):
-            ListTest<List>(_fixture), bound(_bound) {}
+            ListTest<List>("ListTestModification", _fixture), bound(_bound) {}
+        ListTestModification(string case_name, int _bound, TestFixture *_fixture):
+            ListTest<List>(case_name, _fixture), bound(_bound) {}
+
         void set_up() {
             puts("== Now preparing to test Modification...");
             ListTest<List>::set_up();
@@ -131,7 +143,10 @@ class ListTestRepetitiveClear: public ListTest<List> {/*{{{*/
         int times;
     public:
         ListTestRepetitiveClear(int _times, TestFixture *_fixture):
-            ListTest<List>(_fixture), times(_times) {}
+            ListTest<List>("ListTestRepetitiveClear", _fixture), times(_times) {}
+        ListTestRepetitiveClear(string case_name, int _times, TestFixture *_fixture):
+            ListTest<List>(case_name, _fixture), times(_times) {}
+
         void set_up() {
             puts("== Now preparing to test Repetitive Clear...");
             ListTest<List>::set_up();
@@ -162,7 +177,10 @@ class ListTestInsertAndRemove: public ListTest<List> {/*{{{*/
         int bound;
     public:
         ListTestInsertAndRemove(int _bound, TestFixture *_fixture):
-            ListTest<List>(_fixture), bound(_bound) {}
+            ListTest<List>("ListTestInsertAndRemove", _fixture), bound(_bound) {}
+        ListTestInsertAndRemove(string case_name, int _bound, TestFixture *_fixture):
+            ListTest<List>(case_name, _fixture), bound(_bound) {}
+
         void set_up() {
             puts("== Now preparing to test Insert and Remove...");
             ListTest<List>::set_up();
@@ -199,7 +217,10 @@ class ListTestIterator: public ListTest<List> {/*{{{*/
         int times;
     public:
         ListTestIterator(TestFixture *_fixture):
-            ListTest<List>(_fixture) {}
+            ListTest<List>("ListTestIterator", _fixture) {}
+        ListTestIterator(string case_name, TestFixture *_fixture):
+            ListTest<List>(case_name, _fixture) {}
+
         void set_up() {
             puts("== Now preparing to test Iterator...");
             ListTest<List>::set_up();
@@ -262,7 +283,10 @@ class ListTestRandomOperation: public ListTest<List> {/*{{{*/
         int times;
     public:
         ListTestRandomOperation(int _times, TestFixture *_fixture):
-            ListTest<List>(_fixture), times(_times) {}
+            ListTest<List>("ListTestRandomOperation", _fixture), times(_times) {}
+        ListTestRandomOperation(string case_name, int _times, TestFixture *_fixture):
+            ListTest<List>(case_name, _fixture), times(_times) {}
+
         void set_up() {
             puts("== Now preparing to test Random Operation...");
             ListTest<List>::set_up();
@@ -279,6 +303,7 @@ class ListTestRandomOperation: public ListTest<List> {/*{{{*/
             for (int i = 0; i < 5; i++)
             {
                 int size = 0;
+                srand(time(0));
                 for (int i = 0; i < times; i++)
                 {
                     int opt = rand() % 10;
@@ -328,12 +353,15 @@ class ListTestRandomOperation: public ListTest<List> {/*{{{*/
 
 /*{{{ Map Tester thanks to Liao Chao */
 template <class Map>
-class TreeMapTest: public TestCase { /*{{{*/
+class MapTest: public TestCase { /*{{{*/
 	protected:
 		Map *map_ptr;
 
 	public:
-		TreeMapTest(TestFixture *_fixture): TestCase(_fixture) {}
+		MapTest(TestFixture *_fixture): 
+            TestCase("MapTest", _fixture) {}
+		MapTest(string case_name, TestFixture *_fixture): 
+            TestCase(case_name, _fixture) {}
 
 		void print_map_elems() {
 			for (typename Map::Iterator it = map_ptr->iterator(); it.hasNext(); ) {
@@ -344,16 +372,18 @@ class TreeMapTest: public TestCase { /*{{{*/
 		}
 
 		void set_up() {
+            this -> start_memory_watching();
 			map_ptr = new Map();
 		}
 
 		void tear_down() {
 			delete map_ptr;
+            this -> stop_memory_watching();
 		}
 };/*}}}*/
 
 template <class Map>
-class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
+class MapTestAllRandomly: public MapTest <Map> {/*{{{*/
 	private:
 		int times, upper;
 
@@ -362,8 +392,10 @@ class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
 		}
 
 	public:
-		TreeMapTestAllRandomly(int _times, int _upper, TestFixture *_fixture):
-			TreeMapTest <Map>(_fixture), times(_times), upper(_upper) {}
+		MapTestAllRandomly(int _times, int _upper, TestFixture *_fixture):
+			MapTest <Map>("MapTestAllRandomly", _fixture), times(_times), upper(_upper) {}
+		MapTestAllRandomly(string case_name, int _times, int _upper, TestFixture *_fixture):
+			MapTest <Map>(case_name, _fixture), times(_times), upper(_upper) {}
 
 		void set_up() {
 			if (times == 0) {
@@ -376,12 +408,12 @@ class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
 				throw TestException("Ooooops, wrong argument @times @upper, @times");
 			}
 			puts("== Now Preparing to test all randomly...");
-			TreeMapTest <Map>::set_up();
+			MapTest <Map>::set_up();
 		}
 
 		void tear_down() {
 			puts("== Finishing the test...");
-			TreeMapTest <Map>::tear_down();
+			MapTest <Map>::tear_down();
 		}
 
 		void run_test() {
@@ -400,16 +432,20 @@ class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
 					break;
 				}
 			}
+			/*
 			puts("\nall elements:");
 			this->print_map_elems();
 			puts("");
+			*/
 
+			int counter = 0;
 			/**
 			 * test the Iterator & Insertion
+			 * Ooooops, I fount out that this checker is not always true for HashMap.
 			 */
+			/*
 			puts("checking the Iterator & Insertion:");
 			sort(events.begin(), events.end());
-			int counter = 0;
 			for (typename Map::Iterator it = this->map_ptr
 					->iterator(); it.hasNext(); ) {
 				typename Map::Entry tmp = it.next();
@@ -420,6 +456,7 @@ class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
 				counter++;
 			}
 			puts("OK\n");
+			*/
 
 			/**
 			 * test the clear() function & isEmpty() function
@@ -432,6 +469,7 @@ class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
 			for (int i = 0; i < (int)events.size(); i++) {
 				this->map_ptr->put(events[i].first, events[i].second);
 			}
+			/* Ooooops, I fount out that this checker is not always true for HashMap. 
 			counter = 0;
 			for (typename Map::Iterator it = this->map_ptr
 					->iterator(); it.hasNext(); ) {
@@ -441,6 +479,50 @@ class TreeMapTestAllRandomly: public TreeMapTest <Map> {/*{{{*/
 							"gives wrong logical tree structure afther clear() operation!!!");
 				}
 				counter++;
+			}
+			*/
+			puts("OK\n");
+
+			/**
+			 * test Hu Gao.....
+			 */
+			puts("jiu shi yao hu gao:");
+			events.clear();
+			for (int i = 0; i < (int)events.size(); i++) {
+				while (true) {
+					int r = _rand();
+					set <int>::iterator e = all_keys.lower_bound(r);
+					if (e == all_keys.end()) {
+						continue;
+					}
+					r = *e;
+					all_keys.erase(r);
+					this->map_ptr->remove(r);
+					if (this->map_ptr->containsKey(r)) {
+						throw TestException("Ooooops, the containsKey() function of the Map "\
+								"goes wrong!!!");
+					}
+					break;
+				}
+				while (true) {
+					int r = _rand();
+					if (all_keys.find(r) != all_keys.end()) {
+						continue;
+					}
+					all_keys.insert(r);
+					int t = _rand();
+					this->map_ptr->put(r, t);
+					if (this->map_ptr->get(r) != t) {
+						throw TestException("Ooooops, the get() function of the Map"\
+								"goes wrong!!!");
+					}
+					break;
+				}
+			}
+			for (typename Map::Iterator it = this->map_ptr->iterator();
+					it.hasNext(); ) {
+				typename Map::Entry tmp = it.next();
+				events.push_back(make_pair(tmp.getKey(), tmp.getValue()));
 			}
 			puts("OK\n");
 
