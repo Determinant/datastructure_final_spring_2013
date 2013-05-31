@@ -1,14 +1,38 @@
+/**
+ * Copyright (C) 2013 Ted Yin <ted.sybil@gmail.com>
+ * This file is part of Spring 2013 Final Project for Data Structure Class.
+ * 
+ * SFPDSC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SFPDSC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ *     along with SFPDSC.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef TESTCASES_H
+#define TESTCASES_H
+
 #include "unittest.h"
 #include "HashMap.h"
 #include "TreeMap.h"
 #include "ArrayList.h"
 #include "LinkedList.h"
 
+#define LIST_TEMPLATE_HEADER template<template <class> class List>
+#define MAP_TEMPLATE_HEADER template<template <class> class Map>
+
 using UnitTest::TestCase;
 using UnitTest::TestFixture;
 using UnitTest::TestException;
 
-template<template <class> class List>
+LIST_TEMPLATE_HEADER
 class ListTest : public TestCase {/*{{{*/
     protected:
         List<int> *arr_ptr;
@@ -37,7 +61,7 @@ class ListTest : public TestCase {/*{{{*/
         }
 };/*}}}*/
 
-template<template <class> class List>
+LIST_TEMPLATE_HEADER
 class ListTestConsecutiveInsert: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -59,7 +83,7 @@ class ListTestConsecutiveInsert: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-template<template <class> class List>
+LIST_TEMPLATE_HEADER
 class ListTestModification: public ListTest<List> {/*{{{*/
     private:
         int bound;
@@ -88,7 +112,7 @@ class ListTestModification: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-template<template <class> class List>
+LIST_TEMPLATE_HEADER
 class ListTestRepetitiveClear: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -119,7 +143,7 @@ class ListTestRepetitiveClear: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-template<template <class> class List>
+LIST_TEMPLATE_HEADER
 class ListTestInsertAndRemove: public ListTest<List> {/*{{{*/
     private:
         int bound;
@@ -156,7 +180,7 @@ class ListTestInsertAndRemove: public ListTest<List> {/*{{{*/
         }
 };/*}}}*/
 
-template<template <class> class List>
+LIST_TEMPLATE_HEADER
 class ListTestIterator: public ListTest<List> {/*{{{*/
     private:
         int times;
@@ -218,3 +242,75 @@ class ListTestIterator: public ListTest<List> {/*{{{*/
             }
         }
 };/*}}}*/
+
+LIST_TEMPLATE_HEADER
+class ListTestRandomOperation: public ListTest<List> {/*{{{*/
+    private:
+        int times;
+    public:
+        ListTestRandomOperation(int _times, TestFixture *_fixture):
+            ListTest<List>(_fixture), times(_times) {}
+        void set_up() {
+            puts("== Now preparing to test Random Operation...");
+            ListTest<List>::set_up();
+        }
+
+        void tear_down() {
+            puts("== Finishing the test Random Operation...");
+            ListTest<List>::tear_down();
+        }
+
+        void run_test() {
+            vector<int> std;
+            int add_cnt = 0, rm_cnt = 0, set_cnt = 0, get_cnt = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                int size = 0;
+                for (int i = 0; i < times; i++)
+                {
+                    int opt = rand() % 10;
+                    if (!size || opt > 5)
+                    {
+                        int idx = rand() % (size + 1);
+                        int num = rand();
+                        this -> arr_ptr -> add(idx, num); 
+                        std.insert(std.begin() + idx, num);
+                        size++;
+                        add_cnt++;
+                    }
+                    else if (size && opt == 5)
+                    {
+                        int idx = rand() % size;
+                        this -> arr_ptr -> removeIndex(idx);
+                        std.erase(std.begin() + idx);
+                        size--;
+                        rm_cnt++;
+                    }
+                    else if (size && opt <= 1)
+                    {
+                        int idx = rand() % size;
+                        int num = rand();
+                        this -> arr_ptr -> set(idx, num);
+                        std[idx] = num;
+                        set_cnt++;
+                    }
+                    else
+                    {
+                        int idx = rand() % size;
+                        int num0 = this -> arr_ptr -> get(idx);
+                        int num1 = std[idx];
+                        if (num0 != num1) 
+                            throw TestException("the answer from the list "
+                                    "differs from the standard");
+                        get_cnt++;
+                    }
+                }
+                printf("Add: %d\nRemove:%d\nSet:%d\nGet:%d\n", add_cnt, rm_cnt, set_cnt, get_cnt);
+                puts("All cleared.");
+                std.clear();
+                this -> arr_ptr -> clear();
+            }
+        }
+};/*}}}*/
+
+#endif

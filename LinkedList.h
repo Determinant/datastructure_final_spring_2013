@@ -1,6 +1,23 @@
-/** @file */
-#ifndef __LINKEDLIST_H
-#define __LINKEDLIST_H
+/**
+ * Copyright (C) 2013 Ted Yin <ted.sybil@gmail.com>
+ * This file is part of Spring 2013 Final Project for Data Structure Class.
+ * 
+ * SFPDSC is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SFPDSC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ *     along with SFPDSC.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
 
 #include "IndexOutOfBound.h"
 #include "ElementNotExist.h"
@@ -166,13 +183,13 @@ class LinkedList {
              * @throw IndexOutOfBound
              */
 
+            length++;
             _check_index_range(index);
             Node *p = head;
             for (int i = 0; i < index; i++) p = p -> next;
             Node *tmp_ptr = new Node(p, p -> next, element);
             p -> next = tmp_ptr;
             tmp_ptr -> next -> prev = tmp_ptr;
-            length++;
         }
 
         // @brief Removes all of the elements from this list.

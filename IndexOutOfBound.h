@@ -5,8 +5,8 @@
 
 #include <string>
 
-#ifndef __INDEXOUTOFBOUND_H
-#define __INDEXOUTOFBOUND_H
+#ifndef INDEXOUTOFBOUND_H
+#define INDEXOUTOFBOUND_H
 
 class IndexOutOfBound {
 public:

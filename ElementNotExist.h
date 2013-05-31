@@ -4,8 +4,8 @@
  */
 #include <string>
 
-#ifndef __ELEMENTNOTEXIST_H
-#define __ELEMENTNOTEXIST_H
+#ifndef ELEMENTNOTEXIST_H
+#define ELEMENTNOTEXIST_H
 
 class ElementNotExist {
 public: ElementNotExist() {}
