@@ -46,6 +46,11 @@ class ArrayList {
         Tp *arr_ptr;
         int capacity, length, tp_size;
 
+        static void _memcpy(Tp *des, Tp *src, int size) {
+            for (int i = 0; i < size; i++)
+                des[i] = src[i];
+        }
+
         void _realloc_space() {
             /**
              * @brief Double the space if necessary.
@@ -61,10 +66,11 @@ class ArrayList {
                 }
                 else
                 {
+                    int old_capacity = capacity;
                     capacity <<= 1; 
                     Tp *tmp_ptr = new Tp[capacity]; 
                     // double the capacity
-                    memmove(tmp_ptr, arr_ptr, sizeof(Tp) * length); 
+                    ArrayList::_memcpy(tmp_ptr, arr_ptr, old_capacity);
                     delete[] arr_ptr; 
                     // move and free the original space
                     arr_ptr = tmp_ptr;
@@ -113,7 +119,7 @@ class ArrayList {
                 length = other.length;
                 if (arr_ptr != NULL) delete[] arr_ptr;
                 arr_ptr = new Tp[capacity];
-                memmove(arr_ptr, other.arr_ptr, sizeof(Tp) * length);
+                ArrayList::_memcpy(arr_ptr, other.arr_ptr, length);
             }
             return *this;
         }
@@ -126,7 +132,7 @@ class ArrayList {
             capacity = other.capacity;
             length = other.length;
             arr_ptr = new Tp[capacity];
-            memmove(arr_ptr, other.arr_ptr, sizeof(Tp) * length);
+            ArrayList::_memcpy(arr_ptr, other.arr_ptr, length);
         }
 
 

@@ -77,11 +77,11 @@ class HashMap
         Hash hash_func;
         int elem_num;
 
-        int _rectify(const Key &key) const {
+        unsigned int _rectify(const Key &key) const {
             /**
              * @brief Rectify the hash code to fit the size of the bucket.
              */
-            return hash_func.hashCode(key) % HASH_TABLE_SIZE;
+            return (unsigned int)hash_func.hashCode(key) % HASH_TABLE_SIZE;
         }
 
         void _clear_nodes() {
