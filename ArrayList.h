@@ -22,6 +22,7 @@
 #include "IndexOutOfBound.h"
 #include "ElementNotExist.h"
 #include <cstring>
+#include <algorithm>
 
 /**
  * The ArrayList is just like vector in C++.  You should know that "capacity"
@@ -47,8 +48,7 @@ class ArrayList {
         int capacity, length, tp_size;
 
         static void _memcpy(Tp *des, Tp *src, int size) {
-            for (int i = 0; i < size; i++)
-                des[i] = src[i];
+            std::copy(src, src + size, des);
         }
 
         void _realloc_space() {
